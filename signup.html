@@ -1,13 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sign Up - Hotstar Clone</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
 <body>
-  <div class="signup-wrapper">
+
+  <header class="main-header">
+    <h1>Hotstar Clone</h1>
+    <nav class="navbar">
+      <a href="index.html">Home</a>
+      <a href="sports.html">Sports</a>
+      <a href="movies.html">Movies</a>
+      <a href="shows.html">Reality Shows</a>
+      <a href="tv.html">TV</a>
+      <a href="news.html">News</a>
+      <a href="sparks.html">Sparks</a>
+      <a href="contact.html">Contact Us</a>
+    </nav>
+  </header>
+
+  <main class="signup-section">
     <h2>Create Your Account</h2>
-    <form action="http://localhost:3000/signup" method="POST">
-      <input type="text" name="fullname" placeholder="Full Name" required />
-      <input type="email" name="email" placeholder="Email" required />
-      <input type="password" name="password" placeholder="Password" required />
-      <input type="password" name="confirmPassword" placeholder="Confirm Password" required />
+
+    <!-- ✅ Updated action to your EC2 backend signup endpoint -->
+    <form class="signup-form" action="http://3.212.145.235:3000/signup" method="POST" onsubmit="return validateSignupForm()">
+      <input type="text" name="fullname" id="fullname" placeholder="Full Name" required />
+      <input type="email" name="email" id="email" placeholder="Email" required />
+      <input type="password" name="password" id="password" placeholder="Password" required />
+      <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password" required />
       <button type="submit">Sign Up</button>
-      <p>Already have an account? <a href="login.html">Login here</a></p>
     </form>
-  </div>
+
+    <p>Already have an account? <a href="login.html">Login here</a></p>
+  </main>
+
+  <script>
+    function validateSignupForm() {
+      const name = document.getElementById("fullname").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const confirmPassword = document.getElementById("confirmPassword").value.trim();
+
+      if (!name || !email || !password || !confirmPassword) {
+        alert("Please fill in all fields.");
+        return false;
+      }
+
+      if (password !== confirmPassword) {
+        alert("Passwords do not match.");
+        return false;
+      }
+
+      alert("Signup request sent!");
+      return true; // allow form submission
+    }
+  </script>
+
 </body>
+</html>
