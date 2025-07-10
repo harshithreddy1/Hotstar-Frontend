@@ -26,8 +26,8 @@
     <h2>Contact Us</h2>
     <p>If you have any questions, feedback, or suggestions, feel free to reach out to us!</p>
 
-    <!-- Updated form with action, method, and name attributes -->
-    <form class="contact-form" action="http://localhost:3000/contact" method="POST" onsubmit="return validateContactForm()">
+    <!-- ✅ Updated form action to point to your EC2 server IP -->
+    <form class="contact-form" action="http://3.212.145.235:3000/contact" method="POST" onsubmit="return validateContactForm()">
       <input type="text" name="name" id="name" placeholder="Your Name" required />
       <input type="email" name="email" id="email" placeholder="Your Email" required />
       <textarea name="message" id="message" rows="5" placeholder="Your Message" required></textarea>
