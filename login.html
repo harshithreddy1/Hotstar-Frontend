@@ -6,19 +6,47 @@
   <title>Login - Hotstar Clone</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="login-page">
+<body>
 
-  <div class="login-container">
-    <h2>Welcome Back</h2>
+  <header class="main-header">
+    <h1>Hotstar Clone</h1>
+    <nav class="navbar">
+      <a href="index.html">Home</a>
+      <a href="sports.html">Sports</a>
+      <a href="movies.html">Movies</a>
+      <a href="shows.html">Reality Shows</a>
+      <a href="tv.html">TV</a>
+      <a href="news.html">News</a>
+      <a href="sparks.html">Sparks</a>
+      <a href="contact.html">Contact Us</a>
+    </nav>
+  </header>
 
-    <form action="http://localhost:3000/login" method="POST">
-      <input type="email" name="email" id="loginEmail" placeholder="Email" required />
-      <input type="password" name="password" id="loginPassword" placeholder="Password" required />
+  <main class="login-section">
+    <h2>Login</h2>
+
+    <!-- ✅ Updated action to your backend's login API -->
+    <form class="login-form" action="http://3.212.145.235:3000/login" method="POST" onsubmit="return validateLoginForm()">
+      <input type="email" name="email" id="email" placeholder="Your Email" required />
+      <input type="password" name="password" id="password" placeholder="Your Password" required />
       <button type="submit">Login</button>
     </form>
+  </main>
 
-    <p>Don't have an account? <a href="signup.html">Sign up here</a></p>
-  </div>
+  <script>
+    function validateLoginForm() {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!email || !password) {
+        alert("Please fill in all fields.");
+        return false;
+      }
+
+      alert("Login request sent!");
+      return true; // allow form to submit
+    }
+  </script>
 
 </body>
 </html>
