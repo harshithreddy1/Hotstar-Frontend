@@ -4,53 +4,118 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Contact Us - Hotstar Clone</title>
-  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #e6f0ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .signup-container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+      width: 400px;
+    }
+    h2 {
+      text-align: center;
+      color: #0047ab;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-family: Arial, sans-serif;
+    }
+    textarea {
+      resize: vertical;
+    }
+    button {
+      width: 100%;
+      background-color: #0047ab;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #003080;
+    }
+    .error {
+      color: red;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+  </style>
 </head>
 <body>
-
-  <header class="main-header">
-    <h1>Hotstar Clone</h1>
-    <nav class="navbar">
-      <a href="index.html">Home</a>
-      <a href="sports.html">Sports</a>
-      <a href="movies.html">Movies</a>
-      <a href="shows.html">Reality Shows</a>
-      <a href="tv.html">TV</a>
-      <a href="news.html">News</a>
-      <a href="sparks.html">Sparks</a>
-      <a href="contact.html">Contact Us</a>
-    </nav>
-  </header>
-
-  <main class="contact-section">
+  <div class="signup-container">
     <h2>Contact Us</h2>
-    <p>If you have any questions, feedback, or suggestions, feel free to reach out to us!</p>
-
-    <!-- ✅ Updated form action to point to your EC2 server IP -->
-    <form class="contact-form" action="http://3.212.145.235:3000/contact" method="POST" onsubmit="return validateContactForm()">
-      <input type="text" name="name" id="name" placeholder="Your Name" required />
-      <input type="email" name="email" id="email" placeholder="Your Email" required />
-      <textarea name="message" id="message" rows="5" placeholder="Your Message" required></textarea>
+    <form id="contactForm">
+      <input type="text" id="name" name="name" placeholder="Your Name" required />
+      <input type="email" id="email" name="email" placeholder="Your Email" required />
+      <textarea id="message" name="message" rows="5" placeholder="Your Message" required></textarea>
+      <div class="error" id="error"></div>
       <button type="submit">Send Message</button>
     </form>
-  </main>
+  </div>
 
   <script>
-    function validateContactForm() {
+    const contactForm = document.getElementById("contactForm");
+    const errorDiv = document.getElementById("error");
+
+    contactForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
       const name = document.getElementById("name").value.trim();
       const email = document.getElementById("email").value.trim();
       const message = document.getElementById("message").value.trim();
 
-      if (!name || !email || !message) {
-        alert("Please fill in all fields.");
-        return false;
+      errorDiv.textContent = "";
+
+      // ✅ Basic validation
+      if (name.length < 3) {
+        errorDiv.textContent = "Name must be at least 3 characters.";
+        return;
+      }
+      if (!email.includes("@") || email.length < 5) {
+        errorDiv.textContent = "Enter a valid email.";
+        return;
+      }
+      if (message.length < 10) {
+        errorDiv.textContent = "Message must be at least 10 characters.";
+        return;
       }
 
-      // Optional: display confirmation before backend response
-      alert("Message sent successfully!");
-      return true; // allow form submission to backend
-    }
-  </script>
+      // ✅ Send data to backend
+      try {
+        const res = await fetch("/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, email, message }),
+        });
 
+        const data = await res.json();
+
+        if (res.ok) {
+          alert("Message sent successfully!");
+          contactForm.reset(); // Clear form
+        } else {
+          errorDiv.textContent = data.error || "Something went wrong. Try again.";
+        }
+      } catch (err) {
+        console.error(err);
+        errorDiv.textContent = "Server error. Please try again.";
+      }
+    });
+  </script>
 </body>
 </html>
