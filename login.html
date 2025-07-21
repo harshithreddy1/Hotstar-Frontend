@@ -4,49 +4,107 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Login - Hotstar Clone</title>
-  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .login-container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+      width: 350px;
+    }
+    h2 {
+      text-align: center;
+      color: #0047ab;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      width: 100%;
+      background-color: #0047ab;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #003080;
+    }
+    .error {
+      color: red;
+      font-size: 14px;
+    }
+    .signup-link {
+      text-align: center;
+      margin-top: 15px;
+    }
+    .signup-link a {
+      color: #0047ab;
+      text-decoration: none;
+    }
+  </style>
 </head>
 <body>
-
-  <header class="main-header">
-    <h1>Hotstar Clone</h1>
-    <nav class="navbar">
-      <a href="index.html">Home</a>
-      <a href="sports.html">Sports</a>
-      <a href="movies.html">Movies</a>
-      <a href="shows.html">Reality Shows</a>
-      <a href="tv.html">TV</a>
-      <a href="news.html">News</a>
-      <a href="sparks.html">Sparks</a>
-      <a href="contact.html">Contact Us</a>
-    </nav>
-  </header>
-
-  <main class="login-section">
-    <h2>Login</h2>
-
-    <!-- ✅ Updated action to your backend's login API -->
-    <form class="login-form" action="http://3.212.145.235:3000/login" method="POST" onsubmit="return validateLoginForm()">
-      <input type="email" name="email" id="email" placeholder="Your Email" required />
-      <input type="password" name="password" id="password" placeholder="Your Password" required />
+  <div class="login-container">
+    <h2>Welcome Back</h2>
+    <form id="loginForm">
+      <input type="email" name="email" id="loginEmail" placeholder="Email" required />
+      <input type="password" name="password" id="loginPassword" placeholder="Password" required />
+      <div class="error" id="error"></div>
       <button type="submit">Login</button>
     </form>
-  </main>
+
+    <div class="signup-link">
+      Don't have an account? <a href="signup.html">Sign up here</a>
+    </div>
+  </div>
 
   <script>
-    function validateLoginForm() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
+    document.getElementById("loginForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
 
-      if (!email || !password) {
-        alert("Please fill in all fields.");
-        return false;
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      const errorDiv = document.getElementById("error");
+      errorDiv.textContent = "";
+
+      try {
+        const res = await fetch("/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          localStorage.setItem("username", data.user?.fullname || "User");
+          alert("Login successful!");
+          window.location.href = "index.html";
+        } else {
+          errorDiv.textContent = data.error || "Invalid email or password.";
+        }
+      } catch (err) {
+        console.error(err);
+        errorDiv.textContent = "Server error. Please try again later.";
       }
-
-      alert("Login request sent!");
-      return true; // allow form to submit
-    }
+    });
   </script>
-
 </body>
 </html>
+login.html
