@@ -42,13 +42,18 @@
       font-size: 16px;
       cursor: pointer;
     }
-    button:hover {
+    button[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    button:hover:not([disabled]) {
       background-color: #003080;
     }
     .error {
       color: red;
       font-size: 14px;
       margin-top: 5px;
+      min-height: 18px;
     }
     .login-link {
       text-align: center;
@@ -69,16 +74,22 @@
       <input type="password" id="password" name="password" placeholder="Password" required />
       <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required />
       <div class="error" id="error"></div>
-      <button type="submit">Sign Up</button>
+      <button type="submit" id="signupBtn">Sign Up</button>
     </form>
     <div class="login-link">
       Already have an account? <a href="login.html">Login here</a>
     </div>
   </div>
 
+  <!-- Optional: backend URL injected by user data or config.js -->
+  <script src="config.js"></script>
   <script>
+    // Use injected API base if present; else fallback to /api (Nginx proxy)
+    const API_BASE = (typeof window !== "undefined" && window.__API_BASE_URL__) ? window.__API_BASE_URL__ : "/api";
+
     const form = document.getElementById("signupForm");
     const errorDiv = document.getElementById("error");
+    const signupBtn = document.getElementById("signupBtn");
 
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
@@ -90,7 +101,7 @@
 
       errorDiv.textContent = "";
 
-      // ✅ Validation checks
+      // Basic validation
       if (fullname.length < 3) {
         errorDiv.textContent = "Full name must be at least 3 characters.";
         return;
@@ -104,30 +115,37 @@
         return;
       }
 
-      // ✅ Send data using fetch API
+      // Disable button to prevent double submit
+      signupBtn.disabled = true;
+
       try {
-        const response = await fetch("/signup", {
+        const response = await fetch(`${API_BASE}/signup`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            fullname,
-            email,
-            password,
-            confirmPassword
-          }),
+          body: JSON.stringify({ fullname, email, password, confirmPassword }),
         });
 
-        const data = await response.json();
+        // Read raw text first (helps debug non-JSON responses like 504 HTML)
+        const text = await response.text();
+        let data;
+        try {
+          data = JSON.parse(text);
+        } catch {
+          console.error("Non-JSON response:", text);
+          data = { error: "Server error. Please try again." };
+        }
 
         if (response.ok) {
           alert("Signup successful! Please login.");
           window.location.href = "login.html";
         } else {
-          errorDiv.textContent = data.error || "Signup failed. Try again.";
+          errorDiv.textContent = data.error || `Signup failed (${response.status}).`;
         }
       } catch (err) {
         console.error(err);
-        errorDiv.textContent = "Something went wrong. Please try again.";
+        errorDiv.textContent = "Network error. Please try again.";
+      } finally {
+        signupBtn.disabled = false;
       }
     });
   </script>
